@@ -42,7 +42,7 @@ func CreateCommunity(w http.ResponseWriter, req *http.Request) {
 	var arg model.Community
 	//如果这个用的上,那么可以直接
 	util.Bind(req, &arg)
-	com, err := concatService.CreateCommunity(arg);
+	com, err := concatService.CreateCommunity(arg)
 	if err != nil {
 		util.RespFail(w, err.Error())
 	} else {
@@ -77,7 +77,7 @@ func LoadCommunity(w http.ResponseWriter, req *http.Request) {
 	var arg args.ContactArg
 	//如果这个用的上,那么可以直接
 	util.Bind(req, &arg)
-	comunitys := concatService.SearchComunity(arg.Userid)
-	util.RespOkList(w, comunitys, len(comunitys))
+	communitys := concatService.SearchComunity(arg.Userid)
+	util.RespOkList(w, communitys, len(communitys))
 }
 

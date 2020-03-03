@@ -12,17 +12,20 @@ var DbEngine *xorm.Engine
 
 func init() {
 	driverName := "mysql"
-	dsnName := "root:root@(127.0.0.1:3306)/chat?charset=utf8"
+	dsnName := "root:root@(127.0.0.1:3306)/chat?charset=utf8&parseTime=true"
 	err := errors.New("")
 	DbEngine, err = xorm.NewEngine(driverName, dsnName)
 	if err != nil && err.Error() != ""{
+		fmt.Println(err)
 		log.Fatal(err)
 	}
 	DbEngine.ShowSQL(true)
 	//设置数据库连接数
 	DbEngine.SetMaxOpenConns(10)
 	//自动创建数据库
-	DbEngine.Sync(new(User), new(Community), new(Contact))
-
+	err=DbEngine.Sync(new(User), new(Community), new(Contact))
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println("init database ok!")
 }

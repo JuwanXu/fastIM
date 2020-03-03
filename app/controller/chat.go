@@ -3,13 +3,13 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/websocket"
+	"github.com/panjf2000/ants/v2"
+	"gopkg.in/fatih/set.v0"
 	"log"
 	"net/http"
 	"strconv"
 	"sync"
-
-	"github.com/gorilla/websocket"
-	"gopkg.in/fatih/set.v0"
 )
 
 //本核心在于形成userid和Node的映射关系
@@ -26,6 +26,7 @@ const (
 	CmdRoomMsg   = 11
 	CmdHeart     = 0
 )
+const MsgWorkersCount = 8
 
 type Message struct {
 	Id      int64  `json:"id,omitempty" form:"id"`           //消息ID
@@ -103,10 +104,16 @@ func Chat(writer http.ResponseWriter, request *http.Request) {
 	rwlocker.Unlock()
 
 	//开启协程处理发送逻辑
-	go sendproc(node)
+	//go sendproc(node)
+	ants.NewPoolWithFunc(MsgWorkersCount, func(_ interface{}) {
+		sendproc(node)
+	})
 
 	//开启协程完成接收逻辑
-	go recvproc(node)
+	//go recvproc(node)
+	ants.NewPoolWithFunc(MsgWorkersCount, func(_ interface{}) {
+		recvproc(node)
+	})
 
 	sendMsg(userId, []byte("welcome!"))
 }
